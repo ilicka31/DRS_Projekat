@@ -13,8 +13,8 @@
         />
 
         <div class="ml-3">
-          <h5 class="name">Clarke Jeffery</h5>
-          <p class="mail">clark@zmail.com</p>
+          <h5 class="name">{{ user.firstName }} {{ user.lastName }}</h5>
+          <p class="mail">{{ user.email }}</p>
         </div>
       </div>
 
@@ -26,7 +26,7 @@
         </div>
         <div class="d-flex flex-column text-right mr-2">
           <span class="current-balance">Current Balance</span>
-          <span class="amount"><span class="dollar-sign">$</span>1476</span>
+          <span class="amount"><span class="dollar-sign">$</span>{{user.balance}}</span>
         </div>
       </div>
 

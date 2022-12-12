@@ -8,11 +8,8 @@ app.config['MYSQL_HOST'] = 'localhost'
 app.config['MYSQL_USER'] = 'root' 
 app.config['MYSQL_PASSWORD'] = '' 
 app.config['MYSQL_DB'] = 'drs_baza'
+app.config['MYSQL_CURSORCLASS'] = 'DictCursor' 
 mysql = MySQL(app) 
-
- 
-#app.config['MYSQL_CURSORCLASS'] = 'DictCursor' 
-
  
 if __name__ == "__main__":    
     app.register_blueprint(user_blueprint, url_prefix = '/api')     

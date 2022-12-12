@@ -39,6 +39,23 @@ def getUserFromDB():
     _email = content['email']
     return getUser(_email)
 
+@user_blueprint.route('/login', methods=['POST'])
+def login():
+    content = flask.request.json
+    _email = content['email']
+    _password = content['password']
+
+    user = getUser(_email)
+
+    if user == None:
+        retval = {'message' : 'User doesn\'t exist!'}, 400
+    elif user['password'] == _password:
+        retval = {'message' : 'Login successful!'}, 200
+    else:
+        retval = {'message' : 'Password is incorrect!'}, 400
+
+    return retval
+
 def userExists(email: str) -> bool :
     cursor = mysql.connection.cursor()
     cursor.execute("SELECT * FROM user WHERE email = %s", [email])
@@ -51,13 +68,13 @@ def userExists(email: str) -> bool :
 
 def registerUser(name, lastname, email, password, address, city, country, phoneNum, balance, currency,verified):
     cursor = mysql.connection.cursor()
-    cursor.execute(''' INSERT INTO user VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)''',[ name, lastname, email, password, city, country, phoneNum, currency, balance,verified ])
+    cursor.execute(''' INSERT INTO user VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)''',[ name, lastname, email, password, address, city, country, phoneNum, balance, currency,verified ])
     mysql.connection.commit()
     cursor.close()
 
 def getUser(email : str) -> dict:
     cursor = mysql.connection.cursor()
-    cursor.execute("SELECT * FROM user WHERE email = %s", (email,))
+    cursor.execute("SELECT * FROM user WHERE email = %s", [email])
     user = cursor.fetchone()
     cursor.close()
     return user
