@@ -43,6 +43,26 @@ def register():
 
     return render_template('registration.html')
 
+@app.route('/verify', methods = ['POST'])
+def verify():
+    user = session['user']
+    headers = {'Content-type' : 'application/json', 'Accept' : 'text/plain'}
+    
+    email = user['email']
+    body = json.dumps({'email' : email})
+    
+    req = requests.post("http://127.0.0.1:5001/api/verify", data = body, headers = headers)
+    response = (req.json())
+    _message = response['message'] 
+    _code = req.status_code
+
+    if _code == 200:
+        updateUserInSession(user['email'])
+        return render_template('profile.html', user = session['user'])
+    if _code == 400:
+        flash(_message)
+        return redirect(url_for('main'))
+
 @app.route('/login', methods =['POST'])
 def login():
     _email = request.form['email']
