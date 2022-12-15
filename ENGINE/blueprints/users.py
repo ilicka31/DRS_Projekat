@@ -39,6 +39,19 @@ def getUserFromDB():
     _email = content['email']
     return getUser(_email)
 
+@user_blueprint.route('/verify', methods=['POST'])
+def verify():
+    content = flask.request.json
+    email = content['email']
+    user = verifyUser(email)
+    if user:
+        retval = {'message' : 'Account verified! '}, 200
+    else:
+        retval = {'message' : 'Unsuccesfull verification! '}, 400
+        
+    return retval
+    
+
 @user_blueprint.route('/login', methods=['POST'])
 def login():
     content = flask.request.json
@@ -55,6 +68,12 @@ def login():
         retval = {'message' : 'Password is incorrect!'}, 400
 
     return retval
+
+def verifyUser(email : str):
+    cursor = mysql.connection.cursor()
+    cursor.execute("UPDATE user SET isVerified = 1 WHERE email = %s", [email])
+    account = cursor.fetchone()
+    cursor.close()
 
 def userExists(email: str) -> bool :
     cursor = mysql.connection.cursor()

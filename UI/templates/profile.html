@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <head>
 	<link rel="stylesheet" href="../static/css/profile.css">
+
+  
+
 </head>
 <body>
   <div class="container d-flex justify-content-center mt-5">
@@ -30,6 +33,11 @@
         </div>
       </div>
 
+      <div id = "verification">
+
+
+      </div>
+
       <div class="recent-border mt-4">
         <span class="recent-orders">Recent orders</span>
       </div>
@@ -41,4 +49,42 @@
       </div>
     </div>
   </div>
+
+
+  <script type="text/javascript"> 
+    
+    const isVerified = {{user.isVerified}};
+    if(isVerified == 0) {
+      var formVerification = '<form action="http://127.0.0.1:5000/verify" method="post"> ' + 
+        '<div class="verify-acc">' +
+          '<div class="input-field">' +
+            '<input type="text" name="cardNum" placeholder="Enter your card number" required>'+
+            '<i class="uil uil-user"></i>'+
+          '</div>'+
+          '<div class="input-field">'+
+            '<input type="text" name="userName" placeholder="Enter your name" required>'+
+            '<i class="uil uil-user"></i>'+
+          '</div>'+
+          '<div class="input-field">'+
+            '<input type="text" name="expireDate" placeholder="Enter your card expire date" required>'+
+            '<i class="uil uil-user"></i>'+
+          '</div>'+
+          '<div class="input-field">'+
+            '<input type="text" name="cardCode" placeholder="Enter your card code" required>'+
+            '<i class="uil uil-user"></i>'+
+          '</div>'+
+          '<div class="input-field button">'+
+            '<input type="submit" value="Verify">'+
+          '</div>'+
+        '</div>'+
+      '</form>';
+
+      document.querySelector("#verification").innerHTML = formVerification;
+
+    } else {
+      document.getElementById("verification").innerHTML += '<p> Your account is already verified. </p>';
+    }
+  </script>
+
+
 </body>
