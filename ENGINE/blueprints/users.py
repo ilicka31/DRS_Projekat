@@ -43,11 +43,12 @@ def getUserFromDB():
 def verify():
     content = flask.request.json
     email = content['email']
-    user = verifyUser(email)
-    if user:
-        retval = {'message' : 'Account verified! '}, 200
-    else:
+    verifyUser(email)
+    user = getUser(email)
+    if user == None:
         retval = {'message' : 'Unsuccesfull verification! '}, 400
+    else:
+        retval = {'message' : 'Account verified! '}, 200
         
     return retval
     
@@ -72,8 +73,9 @@ def login():
 def verifyUser(email : str):
     cursor = mysql.connection.cursor()
     cursor.execute("UPDATE user SET isVerified = 1 WHERE email = %s", [email])
-    account = cursor.fetchone()
+    mysql.connection.commit()
     cursor.close()
+    #return user
 
 def userExists(email: str) -> bool :
     cursor = mysql.connection.cursor()
