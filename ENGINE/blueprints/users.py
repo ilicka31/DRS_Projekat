@@ -52,10 +52,11 @@ def verifying():
     _email= content['email']
 
     _monthNum = datetime.strptime(_month, '%B').month
-    _expDate =_monthNum+"/"+_year
+    _expDate ="0"+str(_monthNum)+"/"+str(_year)[-2:]    
 
-   # _card = card(_email)
-    if( "4242424242424242" == _cardNumber.strip() and "123" == _cvv.strip() and "02/23" ==_expDate ):
+    #  
+    # _card = card(_email)
+    if( "4242424242424242" == str(_cardNumber).replace(" ", "") and "123" == str(_cvv).replace(" ","") and "02/23" ==str(_expDate)):
         #ovde kao treba skinuti taj dolar???
         updateUserVerified(_email)
         retval = {'message' : 'Succesfull verification! '}, 200
@@ -66,7 +67,7 @@ def verifying():
 
 def updateUserVerified(email):
     cursor = mysql.connection.cursor()
-    cursor.execute("UPDATE user SET isVerified=true WHERE email = %s ",(email))
+    cursor.execute("UPDATE user SET isVerified=true WHERE email = %s ",[email])
     mysql.connection.commit()
     cursor.close()
 

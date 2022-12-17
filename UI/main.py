@@ -97,7 +97,7 @@ def verifying():
 
     if _code == 400:
         flash(_message)
-        return render_template("verify.html", user=session['user'])
+        return render_template("profile.html", user=session['user'])
 
 
 
