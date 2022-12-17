@@ -38,7 +38,7 @@ def getUserFromDB():
     content = flask.request.json
     _email = content['email']
     return getUser(_email)
-
+"""
 @user_blueprint.route('/verify', methods=['POST'])
 def verify():
     content = flask.request.json
@@ -51,7 +51,7 @@ def verify():
         retval = {'message' : 'Account verified! '}, 200
         
     return retval
-    
+""" 
 
 @user_blueprint.route('/login', methods=['POST'])
 def login():
@@ -70,13 +70,35 @@ def login():
 
     return retval
 
+@user_blueprint.route('/updateprofile', methods=['POST'])
+def updateprofile():
+    content = flask.request.json
+    _firstName = content['firstName']
+    _lastName = content['lastName']
+    _email = content['email']
+    _password = content['password']
+    _address = content['address']
+    _city = content['city']
+    _country = content['country']
+    _phone = content['phone']
+
+    updateUser(_firstName, _lastName, _email, _password, _address, _city, _country, _phone)
+    retVal = {'message' : 'User info successfully updated'}, 200
+    return retVal
+
+def updateUser(name, lastname, email, password, address, city, country, phone):
+    cursor = mysql.connection.cursor()
+    cursor.execute("UPDATE user SET firstName = %s, lastName = %s, password = %s, address = %s, city = %s, country = %s, phone = %s WHERE email = %s ",(name, lastname, password, address, city, country, phone, email))
+    mysql.connection.commit()
+    cursor.close()
+"""
 def verifyUser(email : str):
     cursor = mysql.connection.cursor()
     cursor.execute("UPDATE user SET isVerified = 1 WHERE email = %s", [email])
     mysql.connection.commit()
     cursor.close()
     #return user
-
+"""
 def userExists(email: str) -> bool :
     cursor = mysql.connection.cursor()
     cursor.execute("SELECT * FROM user WHERE email = %s", [email])

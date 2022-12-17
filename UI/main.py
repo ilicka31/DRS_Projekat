@@ -42,7 +42,7 @@ def register():
         return redirect(url_for('main'))
 
     return render_template('registration.html')
-
+"""
 @app.route('/verify', methods = ['POST'])
 def verify():
     user = session['user']
@@ -62,6 +62,10 @@ def verify():
     if _code == 400:
         flash(_message)
         return redirect(url_for('main'))
+"""
+@app.route('/verify')
+def verify():
+    return render_template("verify.html", user=session['user'])
 
 @app.route('/login', methods =['POST'])
 def login():
@@ -86,6 +90,38 @@ def login():
 @app.route('/profile')
 def profile():
     return render_template('profile.html', user = session['user'])
+
+@app.route('/update')
+def update():
+    return render_template('updateprofile.html', user=session['user'])
+
+@app.route('/updateuser', methods=['POST'])
+def updateuser():
+    user = session['user']
+    _firstName = request.form['firstName']
+    _lastName = request.form['lastName']
+    _email = user['email']
+    _password = request.form['password']
+    _address = request.form['address']
+    _city = request.form['city']
+    _country = request.form['country']
+    _phone = request.form['phone']
+    
+    headers = {'Content-type' : 'application/json', 'Accept' : 'text/plain'}
+    body = json.dumps({'firstName': _firstName, 'lastName':_lastName,'email' : _email, 'password':_password, 'address':_address, 
+                        'city':_city, 'country':_country, 'phone':_phone})
+    print(_email)
+    req = requests.post("http://127.0.0.1:5001/api/updateprofile", data = body, headers = headers)
+
+    response = (req.json())
+    _message = response['message'] 
+    _code = req.status_code
+    updateUserInSession(session['user']['email'])
+
+    if _code == 200:
+        return redirect(url_for('profile'))
+    return render_template('profile.html')
+
 
 def updateUserInSession(email):
     # Get updated user and put it in session['user']

@@ -1,9 +1,12 @@
 body{
-	background-color: #eee;
+	background-color: #4070f4;
+	display: flex;
+    align-items: center;
+    justify-content: center;
 }
 .card{
-	background-color: #fff;
-	width: 280px;
+	background-color: rgb(203, 208, 236);
+	width: 400px;
 	border-radius: 33px;
 	box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 	padding: 2rem !important;
@@ -88,7 +91,7 @@ body{
 .recent-orders{
 	font-size: 16px;
 	font-weight: 700;
-	color: #5957f9;
+	color: #272727;
 	margin-left: 2px;
 }
 
