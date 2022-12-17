@@ -1,6 +1,8 @@
 from flask import Blueprint, session, Flask
 import flask
 from flask_mysqldb import MySQL 
+from datetime import datetime
+
 
 user_blueprint = Blueprint('user_blueprint', __name__)
 
@@ -38,6 +40,36 @@ def getUserFromDB():
     content = flask.request.json
     _email = content['email']
     return getUser(_email)
+
+
+@user_blueprint.route('/verifying', methods=['POST'])
+def verifying():
+    content = flask.request.json
+    _cardNumber  = content['cardNumber']
+    _month =  content['month']
+    _year = content['year']
+    _cvv = content['cvv']
+    _email= content['email']
+
+    _monthNum = datetime.strptime(_month, '%B').month
+    _expDate =_monthNum+"/"+_year
+
+   # _card = card(_email)
+    if( "4242424242424242" == _cardNumber.strip() and "123" == _cvv.strip() and "02/23" ==_expDate ):
+        #ovde kao treba skinuti taj dolar???
+        updateUserVerified(_email)
+        retval = {'message' : 'Succesfull verification! '}, 200
+    else:
+        retval = {'message' : 'Unsuccesfull verification!'}, 400
+   
+    return retval
+
+def updateUserVerified(email):
+    cursor = mysql.connection.cursor()
+    cursor.execute("UPDATE user SET isVerified=true WHERE email = %s ",(email))
+    mysql.connection.commit()
+    cursor.close()
+
 """
 @user_blueprint.route('/verify', methods=['POST'])
 def verify():
@@ -91,14 +123,7 @@ def updateUser(name, lastname, email, password, address, city, country, phone):
     cursor.execute("UPDATE user SET firstName = %s, lastName = %s, password = %s, address = %s, city = %s, country = %s, phone = %s WHERE email = %s ",(name, lastname, password, address, city, country, phone, email))
     mysql.connection.commit()
     cursor.close()
-"""
-def verifyUser(email : str):
-    cursor = mysql.connection.cursor()
-    cursor.execute("UPDATE user SET isVerified = 1 WHERE email = %s", [email])
-    mysql.connection.commit()
-    cursor.close()
-    #return user
-"""
+
 def userExists(email: str) -> bool :
     cursor = mysql.connection.cursor()
     cursor.execute("SELECT * FROM user WHERE email = %s", [email])

@@ -1,39 +1,91 @@
 {% extends 'profile.html' %}
 {% block modal %}
+
+<head>
+  <link rel="stylesheet" href="../static/css/verify.css">
+
+</head>
+
 <div class="modal" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel">Verification</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body">
-          <form >
-            <div class="form-group">
-              <label for="recipient-name" class="col-form-label">Recipient:</label>
-              <input type="text" class="form-control" id="recipient-name">
+  <div class="modal-dialog" role="document">
+
+    <form action="http://127.0.0.1:5000/verifying" method="post">
+    <div class="modal-content" style="width:400px;">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Credit card verification</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      
+        <div class="modal-body" style="max-height: 30vh">
+
+
+          <!-- Card Number -->
+          <input type="text" name="card" class="card-number" placeholder="Card Number">
+
+          <!-- Date Field -->
+
+          <div class="date-field">
+            <div class="month" >
+              <select name="month">
+                <option value="january">January</option>
+                <option value="february">February</option>
+                <option value="march">March</option>
+                <option value="april">April</option>
+                <option value="may">May</option>
+                <option value="june">June</option>
+                <option value="july">July</option>
+                <option value="august">August</option>
+                <option value="september">September</option>
+                <option value="october">October</option>
+                <option value="november">November</option>
+                <option value="december">December</option>
+              </select>
             </div>
-            <div class="form-group">
-              <label for="message-text" class="col-form-label">Message:</label>
-              <textarea class="form-control" id="message-text"></textarea>
+            <div class="year" >
+              <select name="year">
+                <option value="2016">2016</option>
+                <option value="2017">2017</option>
+                <option value="2018">2018</option>
+                <option value="2019">2019</option>
+                <option value="2020">2020</option>
+                <option value="2021">2021</option>
+                <option value="2022">2022</option>
+                <option value="2023">2023</option>
+                <option value="2024">2024</option>
+              </select>
             </div>
-          </form>
+
+          </div>
+
+          <!-- Card Verification Field -->
+          <div class="card-verification">
+            <div class="cvv-input">
+              <input type="text" name= "cvv" placeholder="CVV">
+            </div>
+            <div class="cvv-details">
+              <p>3 or 4 digits usually found <br> on the signature strip</p>
+            </div>
+          </div>
         </div>
+
+
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-          <button type="button" class="btn btn-primary">Send message</button>
+          <button type="submit" class="btn btn-primary">Verify!</button>
         </div>
-      </div>
+      
     </div>
+  </form>
   </div>
+</div>
 {% endblock %}
 {% block script %}
 <script>
-$(document).ready(function(){
+  $(document).ready(function () {
     console.log("window is loaded")
     $("#exampleModal").modal("show")
-})
+  })
 </script>
 {% endblock %}

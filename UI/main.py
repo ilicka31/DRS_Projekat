@@ -67,6 +67,34 @@ def verify():
 def verify():
     return render_template("verify.html", user=session['user'])
 
+@app.route('/verifying', methods =['POST'])
+def verifying():
+    user = session['user']
+    _email =user['email']
+    _cardNumber = request.form['card']
+    _month = request.form['month']
+    _year = request.form['year']
+    _cvv = request.form['cvv']
+    
+
+    headers = {'Content-type' : 'application/json', 'Accept' : 'text/plain'}
+    body = json.dumps({'cardNumber': _cardNumber, 'month':_month, 'year':_year, 'cvv':_cvv, 'email': _email })
+    req = requests.post("http://127.0.0.1:5001/api/verifying", data = body, headers=headers)
+
+    response = (req.json())
+    _message = response['message'] 
+    _code = req.status_code
+    
+    if _code == 200:
+        flash(_message)
+        return redirect(url_for('profile'))
+
+    if _code == 400:
+        flash(_message)
+        return render_template("verify.html", user=session['user'])
+
+
+
 @app.route('/login', methods =['POST'])
 def login():
     _email = request.form['email']

@@ -4,7 +4,7 @@ class Card:
 
     @property
     def num(self):
-        return '4242 4242 4242 4242'
+        return '4242424242424242'
 
     @property
     def date(self):
