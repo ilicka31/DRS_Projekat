@@ -63,6 +63,12 @@ def verify():
         flash(_message)
         return redirect(url_for('main'))
 """
+
+@app.route('/logout')
+def logout():
+    session['user']= None
+    return render_template('registration.html')
+
 @app.route('/verify')
 def verify():
     return render_template("verify.html", user=session['user'])
