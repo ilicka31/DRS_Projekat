@@ -123,7 +123,7 @@ def login():
 
 @app.route('/profile')
 def profile():
-    return render_template('profile.html', user = session['user'])
+    return render_template('profile.html', user = session['user'],currency_dictionary = currency_dictionary, )
 
 @app.route('/update')
 def update():
@@ -163,6 +163,24 @@ def updateUserInSession(email):
     body = json.dumps({'email': email})
     req = requests.get("http://127.0.0.1:5001/api/getUserFromDB", data = body, headers = headers)
     session['user'] = (req.json())
+
+
+currency_dictionary ={}
+@app.before_first_request
+def getCurrencyList():
+    global currency_dictionary 
+    currency_dictionary = refreshCurrencyList('USD')
+    
+def refreshCurrencyList(base_currency : str):
+    # base currency is RSD in our case
+    req = requests.get("https://freecurrencyapi.net/api/v2/latest?apikey=57fbaed0-7177-11ec-a390-0d2dac4cb175&base_currency=" + base_currency)
+    currency_dict = (req.json())['data']
+
+    # Converts every other currency in base currecy value
+    for key, value in currency_dict.items():
+        currency_dict[key] = 1 / value
+
+    return dict(sorted(currency_dict.items(), key=lambda x:x[1], reverse=True))
 
 
 
