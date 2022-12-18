@@ -12,7 +12,7 @@ body{
 	padding: 2rem !important;
 }
 .card-body {
-    max-height: 35vh;
+    max-height: 50vh;
 }
 .top-container{
 	display: flex;

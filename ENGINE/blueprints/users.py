@@ -1,8 +1,6 @@
-from flask import Blueprint, session, Flask
+from flask import Blueprint
 import flask
-from flask_mysqldb import MySQL 
 from datetime import datetime
-
 
 user_blueprint = Blueprint('user_blueprint', __name__)
 

@@ -21,7 +21,7 @@ def register():
     _country = request.form['country']
     _phone = request.form['phone']
     _balance = "0"
-    _currency = 'RSD'
+    _currency = 'USD'
 
     headers = {'Content-type' : 'application/json', 'Accept' : 'text/plain'}
     body = json.dumps({'firstName': _firstName, 'lastName':_lastName, 'email':_email, 'password':_password, 'address':_address, 
@@ -123,7 +123,8 @@ def login():
 
 @app.route('/profile')
 def profile():
-    return render_template('profile.html', user = session['user'],currency_dictionary = currency_dictionary, )
+    transaction_history = getTransactionHistory()
+    return render_template('profile.html', user = session['user'],currency_dictionary = currency_dictionary, transaction_history = transaction_history)
 
 @app.route('/update')
 def update():
@@ -182,6 +183,12 @@ def refreshCurrencyList(base_currency : str):
 
     return dict(sorted(currency_dict.items(), key=lambda x:x[1], reverse=True))
 
+
+def getTransactionHistory():
+    headers = {'Content-type' : 'application/json', 'Accept': 'text/plain'}
+    body = json.dumps({'email': session['user']['email']})
+    req = requests.get("http://127.0.0.1:5001/api/getTransactionHistory", data = body, headers = headers)
+    return req.json()
 
 
 app.run(port=5000)
