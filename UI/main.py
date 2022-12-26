@@ -158,6 +158,14 @@ def updateuser():
     return render_template('profile.html')
 
 
+@app.route('/changeCurrency', methods=['POST'])
+def change():
+    newCurrency=request.form['currencyChosenByTheUser']
+    return render_template('profile.html', user = session['user'],currency_dictionary = refreshCurrencyList(newCurrency))
+
+
+
+
 def updateUserInSession(email):
     # Get updated user and put it in session['user']
     headers = {'Content-type' : 'application/json', 'Accept': 'text/plain'}
@@ -169,7 +177,7 @@ def updateUserInSession(email):
 currency_dictionary ={}
 @app.before_first_request
 def getCurrencyList():
-    global currency_dictionary 
+    global currency_dictionary
     currency_dictionary = refreshCurrencyList('USD')
     
 def refreshCurrencyList(base_currency : str):
@@ -183,6 +191,10 @@ def refreshCurrencyList(base_currency : str):
 
     return dict(sorted(currency_dict.items(), key=lambda x:x[1], reverse=True))
 
+
+
+    
+    
 
 def getTransactionHistory():
     headers = {'Content-type' : 'application/json', 'Accept': 'text/plain'}
