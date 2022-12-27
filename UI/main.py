@@ -163,6 +163,7 @@ def change():
     newCurrency=request.form['currencyChosenByTheUser']
     return render_template('profile.html', user = session['user'],currency_dictionary = refreshCurrencyList(newCurrency))
 
+countries_dictionary={}
 
 
 

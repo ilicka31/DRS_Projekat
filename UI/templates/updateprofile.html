@@ -1,82 +1,82 @@
 <!DOCTYPE html>
 
 <head>
-  <!-- Google Fonts -->
-  <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700,900&display=swap" rel="stylesheet">
-  <!-- Bootstrap CSS -->
-  <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/css/bootstrap.min.css'>
-  <!-- Font Awesome CSS -->
-  <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css'>
-  <link rel="stylesheet" href="../static/css/updateprofile.css">
-  <title>Update profile</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700,900&display=swap" rel="stylesheet">
+    <!-- Bootstrap CSS -->
+    <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/css/bootstrap.min.css'>
+    <!-- Font Awesome CSS -->
+    <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css'>
+    <link rel="stylesheet" href="../static/css/updateprofile.css">
+    <title>Update profile</title>
 </head>
 
 <body>
-  <div class="profile py-4">
-    <div class="container">
-      <div class="row justify-content-center">
-        <div class="col-6">
-          <div class="card shadow-sm">
-            <div class="card-header bg-transparent border-0">
-              <h3 class="mb-0"><i class="far fa-clone pr-1"></i>User profile information</h3>
+    <div class="profile py-4">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-6">
+                    <div class="card shadow-sm">
+                        <div class="card-header bg-transparent border-0">
+                            <h3 class="mb-0"><i class="far fa-clone pr-1"></i>User profile information</h3>
+                        </div>
+                        <div class="card-body pt-0">
+
+                            <form action="http://127.0.0.1:5000/updateuser" method="post">
+                                <table class="table table-bordered">
+                                    <tr>
+                                        <th width="30%">First name</th>
+                                        <td><input type="text" name="firstName" size="30" value="{{user.firstName}}" /></td>
+                                    </tr>
+                                    <tr>
+                                        <th width="30%">Last name</th>
+
+                                        <td><input type="text" name="lastName" size="30" value="{{user.lastName}}" /></td>
+                                    </tr>
+                                    <tr>
+                                        <th width="30%">Email</th>
+
+                                        <td>{{user.email}}</td>
+                                    </tr>
+                                    <tr>
+                                        <th width="30%">Password</th>
+
+                                        <td><input type="text" name="password" size="30" value="{{user.password}}" /></td>
+                                    </tr>
+                                    <tr>
+                                        <th width="30%">Address</th>
+
+                                        <td><input type="text" name="address" size="30" value="{{user.address}}" /></td>
+                                    </tr>
+                                    <tr>
+                                        <th width="30%">City</th>
+
+                                        <td><input type="text" name="city" size="30" value="{{user.city}}" /></td>
+                                    </tr>
+                                    <tr>
+                                        <th width="30%">Country</th>
+
+                                        <td><input type="text" name="country" size="30" value="{{user.country}}" /></td>
+                                    </tr>
+                                    <tr>
+                                        <th width="30%">Phone</th>
+
+                                        <td><input type="text" name="phone" size="30" value="{{user.phone}}" /></td>
+                                    </tr>
+                                    <tr style="text-align:center;">
+                                        <td colspan="2" style="align-items: center;">
+                                            <a class="btn btn-secondary" href="\profile">Cancel</a>
+                                            <input class="btn btn-primary" type="submit" value="Commit changes" />
+                                        </td>
+                                    </tr>
+                                </table>
+                            </form>
+
+                        </div>
+                    </div>
+                    <div style="height: 26px"></div>
+                </div>
             </div>
-            <div class="card-body pt-0">
-
-              <form action="http://127.0.0.1:5000/updateuser" method="post">
-                <table class="table table-bordered">
-                  <tr>
-                    <th width="30%">First name</th>
-                    <td><input type="text" name="firstName" size="30" value="{{user.firstName}}" /></td>
-                  </tr>
-                  <tr>
-                    <th width="30%">Last name</th>
-
-                    <td><input type="text" name="lastName" size="30" value="{{user.lastName}}" /></td>
-                  </tr>
-                  <tr>
-                    <th width="30%">Email</th>
-
-                    <td>{{user.email}}</td>
-                  </tr>
-                  <tr>
-                    <th width="30%">Password</th>
-
-                    <td><input type="text" name="password" size="30" value="{{user.password}}" /></td>
-                  </tr>
-                  <tr>
-                    <th width="30%">Address</th>
-
-                    <td><input type="text" name="address" size="30" value="{{user.address}}" /></td>
-                  </tr>
-                  <tr>
-                    <th width="30%">City</th>
-
-                    <td><input type="text" name="city" size="30" value="{{user.city}}" /></td>
-                  </tr>
-                  <tr>
-                    <th width="30%">Contry</th>
-
-                    <td><input type="text" name="country" size="30" value="{{user.country}}" /></td>
-                  </tr>
-                  <tr>
-                    <th width="30%">Phone</th>
-
-                    <td><input type="text" name="phone" size="30" value="{{user.phone}}" /></td>
-                  </tr>
-                  <tr style="text-align:center;">
-                    <td colspan="2" style="align-items: center;">
-                      <a class="btn btn-secondary" href="\profile">Cancel</a>
-                      <input class="btn btn-primary" type="submit" value="Commit changes" />
-                    </td>
-                  </tr>
-                </table>
-              </form>
-
-            </div>
-          </div>
-          <div style="height: 26px"></div>
         </div>
-      </div>
     </div>
-  </div>
 </body>
