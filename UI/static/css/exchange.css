@@ -1,0 +1,106 @@
+* {
+    box-sizing: border-box;
+}
+
+body,
+html {
+    height: 100%;
+    min-height: 100%;
+}
+
+body {
+    margin: 0;
+    background-color: #e7e7e7;
+    font-family: 'Roboto', sans-serif;
+}
+
+
+/* Credit Card */
+
+.form-header {
+    height: 60px;
+    padding: 20px 30px 0;
+    border-bottom: 1px solid #E1E8EE;
+}
+
+.form-body {
+    height: 340px;
+}
+
+
+/* Title */
+
+.title {
+    margin: 0;
+    color: #5e6977;
+    font-size: 18px;
+}
+
+
+/* Common */
+
+.ammountToExchange,
+.amountExchanged input,
+.currencyToExchange select,
+.usersCurrencies select {
+    height: 42px;
+}
+
+.ammountToExchange,
+.amountExchanged input,
+.currencyToExchange select,
+.usersCurrencies select {
+    font-size: 14px;
+    font-weight: 100;
+    line-height: 14px;
+}
+
+.ammountToExchange,
+.amountExchanged input,
+.currencyToExchange select,
+.usersCurrencies select {
+    color: #86939e;
+    opacity: .7;
+}
+
+.ammountToExchange {
+    width: 100%;
+    margin-bottom: 20px;
+    padding-left: 20px;
+    border: 2px solid #e1e8ee;
+    border-radius: 6px;
+}
+
+.currencyToExchange select,
+.usersCurrencies select {
+    appearance: none;
+    -moz-appearance: none;
+    -webkit-appearance: none;
+    width: 145px;
+    margin-bottom: 20px;
+    padding-left: 20px;
+    border: 2px solid #e1e8ee;
+    border-radius: 6px;
+    background: url('caret.png') no-repeat;
+    background-position: 85% 50%;
+}
+
+.currencyToExchange select {
+    float: left;
+}
+
+.usersCurrencies select {
+    float: right;
+}
+
+
+/* Card Verification Field */
+
+.amountExchanged input {
+    width: 145px;
+    float: left;
+    padding-left: 20px;
+    border: 2px solid #e1e8ee;
+    border-radius: 6px;
+    background: #fff;
+}

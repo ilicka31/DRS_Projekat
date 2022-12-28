@@ -70,11 +70,19 @@
                 </div>
 
                 <!---------------------------------------------------!-->
+                <div>
+                    <form action="http://127.0.0.1:5000/exchange">
+                        <div>
+                            <input class="btn btn-secondary" type="submit" value="exchange">
+
+                        </div>
+                    </form>
+                </div>
                 <div class="card">
                     <div class="top-container">
                         <h5 class="card-title">List of crypto currency</h5>
                     </div>
-                    <form action="http://127.0.0.1:5000/changeCurrency" method="post">
+                    <!--<form action="http://127.0.0.1:5000/changeCurrency" method="post">
                         <input list="currencies" name="currencyChosenByTheUser" placeholder="Chose currency" />
                         <datalist id="currencies">
                             {%for currency in currency_dictionary%}
@@ -82,7 +90,7 @@
                             {%endfor%}
                         </datalist>
                         <input type="submit" value="Change currency" />
-                    </form>
+                    </form>-->
 
 
                     <div class="card-body d-flex ">
@@ -157,7 +165,6 @@
             .forEach(tr => tbody.appendChild(tr));
     })));
 </script>
-<script src="../static/js/profile.js"></script>
 
 {% endblock %}
 

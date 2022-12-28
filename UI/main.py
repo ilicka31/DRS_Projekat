@@ -98,6 +98,14 @@ def verifying():
     if _code == 400:
         flash(_message)
         return render_template("profile.html", user=session['user'])
+        
+@app.route('/exchange')
+def exchange():
+    #treba dodati da vraca listu samo i=onih valuta koje poseduje, a i listu svih valuta
+    return render_template("exchange.html", user=session['user'], currency_dictionary=currency_dictionary)
+
+#@app.route('/exchanging')
+
 
 
 
@@ -159,10 +167,10 @@ def updateuser():
 
 
 
-@app.route('/changeCurrency', methods=['POST'])
-def change():
-    newCurrency=request.form['currencyChosenByTheUser']
-    return render_template('profile.html', user = session['user'],currency_dictionary = refreshCurrencyList(newCurrency))
+#@app.route('/changeCurrency', methods=['POST'])
+#def change():
+#    newCurrency=request.form['currencyChosenByTheUser']
+#    return render_template('profile.html', user = session['user'],currency_dictionary = refreshCurrencyList(newCurrency))
 
 countries_dictionary={}
 
@@ -184,7 +192,7 @@ def getCurrencyList():
     
 def refreshCurrencyList(base_currency : str):
     # base currency is RSD in our case
-    req = requests.get("https://freecurrencyapi.net/api/v2/latest?apikey=57fbaed0-7177-11ec-a390-0d2dac4cb175&base_currency=" + base_currency)
+    req = requests.get("https://api.freecurrencyapi.com/v1/latest?apikey=MmuhzxpAOc1bDgPlzY1t4wrbjW9Q7NW6af3HRDv6&base_currency=" + base_currency)
     currency_dict = (req.json())['data']
 
     # Converts every other currency in base currecy value
