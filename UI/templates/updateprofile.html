@@ -41,7 +41,10 @@
                                     <tr>
                                         <th width="30%">Password</th>
 
-                                        <td><input type="text" name="password" size="30" value="{{user.password}}" /></td>
+                                        <td>
+                                            <input type="password" readonly name="password" size="30" value="{{user.password}}" />
+                                            <!--<button value="Change password" id="btnChangePassword" onclick="passwordChange('{{user.password}}')"></button>-->
+                                        </td>
                                     </tr>
                                     <tr>
                                         <th width="30%">Address</th>
@@ -56,12 +59,21 @@
                                     <tr>
                                         <th width="30%">Country</th>
 
-                                        <td><input type="text" name="country" size="30" value="{{user.country}}" /></td>
+                                        <td>
+                                            <!--<input type="text" name="country" size="30" value="{{user.country}}" />-->
+                                            <input list="countries" name="country" placeholder="{{user.country}}" />
+                                            <datalist id="countries">
+                                                
+                                            </datalist>
+                                        </td>
                                     </tr>
                                     <tr>
                                         <th width="30%">Phone</th>
 
-                                        <td><input type="text" name="phone" size="30" value="{{user.phone}}" /></td>
+                                        <td><input type="text" name="phone" size="30" value="{{user.phone}}" autocomplete="off" />
+
+                                        </td>
+
                                     </tr>
                                     <tr style="text-align:center;">
                                         <td colspan="2" style="align-items: center;">
@@ -79,4 +91,6 @@
             </div>
         </div>
     </div>
+    <script src="../static/js/updateProfile.js"></script>
+
 </body>

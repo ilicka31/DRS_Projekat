@@ -158,6 +158,7 @@ def updateuser():
     return render_template('profile.html')
 
 
+
 @app.route('/changeCurrency', methods=['POST'])
 def change():
     newCurrency=request.form['currencyChosenByTheUser']
