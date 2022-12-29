@@ -31,7 +31,7 @@
                     <div class="currency-field">
                         <div class="currencyToExchange">
                             <select name="currencyToExchange">
-                                                        {%for currency in currency_dictionary%}
+                                                        {%for currency in users_currencies%}
                                                             <option value="{{currency}}">{{currency}}</option>
                                                         {%endfor%}
                                                     </select>

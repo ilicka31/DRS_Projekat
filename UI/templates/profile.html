@@ -77,13 +77,14 @@
                 </div>
 
                 <!---------------------------------------------------!-->
-                <div>
+                <div>{% if user.isVerified%}
                     <form action="http://127.0.0.1:5000/exchange">
                         <div>
                             <input class="btn btn-secondary" type="submit" value="exchange">
 
                         </div>
                     </form>
+                    {%endif%}
                 </div>
                 <div class="card">
                     <div class="top-container">

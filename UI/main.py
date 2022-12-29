@@ -90,10 +90,10 @@ def verifying():
     response = (req.json())
     _message = response['message'] 
     _code = req.status_code
-    
+    session['user']['isVerified']=1
     if _code == 200:
         flash(_message)
-        return redirect(url_for('profile'))
+        return render_template('profile.html', user=session['user'])
 
     if _code == 400:
         flash(_message)
@@ -101,15 +101,28 @@ def verifying():
         
 @app.route('/exchange')
 def exchange():
-    #treba dodati da vraca listu samo i=onih valuta koje poseduje, a i listu svih valuta
-    return render_template("exchange.html", user=session['user'], currency_dictionary=currency_dictionary)
+
+
+    users_currencies = [item['currency'] for item in getUsersCurrencies(session['user']['email'])]
+    return render_template("exchange.html", user=session['user'], currency_dictionary=currency_dictionary, users_currencies=users_currencies)
 
 #@app.route('/exchanging')
 
 @app.route('/addMoney')
 def addMoney():
-    
+
     return render_template("addMoney.html", user=session['user'])
+
+@app.route('/addingMoney', methods=['POST'])
+def addingMoney():
+    user=session['user']
+    email=user['email']
+    ammountToAdd=request.form['ammountToAdd']
+    headers = {'Content-type' : 'application/json', 'Accept' : 'text/plain'}
+    body = json.dumps({'email' : email, 'ammount' : ammountToAdd})
+    req = requests.post("http://127.0.0.1:5001/api/addingMoney", data = body, headers = headers)
+    updateUserInSession(email)
+    return render_template('profile.html', user=session['user'], message=req.json())
 
 @app.route('/login', methods =['POST'])
 def login():
@@ -205,7 +218,13 @@ def refreshCurrencyList(base_currency : str):
 
 
 
+def getUsersCurrencies(email):
     
+    headers = {'Content-type' : 'application/json', 'Accept': 'text/plain'}
+    body = json.dumps({'email': email})
+    req = requests.get("http://127.0.0.1:5001/api/getUsersCurrencies", data = body, headers = headers)
+    
+    return req.json()   
     
 
 def getTransactionHistory():
