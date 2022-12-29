@@ -58,12 +58,19 @@
                         </div>
 
                         <div>
-                            <form action="http://127.0.0.1:5000/verify">
-                                <div>
-                                    <input class="btn btn-secondary" type="submit" value="Verify profile">
+                            <div>
+                                {% if user.isVerified %}
+                                <form action="http://127.0.0.1:5000/addMoney">
+                                    <input class="btn btn-secondary" type="submit" value="Add money">
 
-                                </div>
-                            </form>
+                                </form>
+                                {% else %}
+                                <form action="http://127.0.0.1:5000/verify">
+
+                                    <input class="btn btn-secondary" type="submit" value="Verify profile"> {% endif %}
+                                </form>
+
+                            </div>
                         </div>
 
                     </div>

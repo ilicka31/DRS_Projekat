@@ -106,8 +106,10 @@ def exchange():
 
 #@app.route('/exchanging')
 
-
-
+@app.route('/addMoney')
+def addMoney():
+    
+    return render_template("addMoney.html", user=session['user'])
 
 @app.route('/login', methods =['POST'])
 def login():
