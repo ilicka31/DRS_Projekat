@@ -86,11 +86,11 @@ body {
 }
 
 .currencyToExchange select {
-    float: left;
+    float: right;
 }
 
 .usersCurrencies select {
-    float: right;
+    float: left;
 }
 
 
@@ -103,4 +103,10 @@ body {
     border: 2px solid #e1e8ee;
     border-radius: 6px;
     background: #fff;
+}
+
+.lblMessage {
+    color: red;
+    font-style: italic;
+    float: left;
 }

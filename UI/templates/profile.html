@@ -40,7 +40,13 @@
                         </div>
                         <div class="d-flex flex-column text-right mr-2">
                             <span class="current-balance">Current Balance</span>
-                            <span class="amount"><span class="dollar-sign">$</span>{{user.balance}}</span>
+                            <span><select id="currencyBalance">
+                                {%for currency in users_currencies%}
+                                    <option value="{{currency.currency}}">{{currency.currency}}</option>
+                                {%endfor%}
+                            </select></span>
+                            <span class="amount"><span class="dollar-sign"> </span>{{user.balance}}
+                            </span>
                         </div>
                     </div>
 
@@ -155,6 +161,7 @@
             </div>
         </div>
         {% block modal %}{% endblock %}
+
 </body>
 {% block script %}
 <script type="text/javascript ">
@@ -172,6 +179,15 @@
             .sort(comparer(Array.from(th.parentNode.children).indexOf(th), this.asc = !this.asc))
             .forEach(tr => tbody.appendChild(tr));
     })));
+
+    $('#currencyBalance').change(function() {
+        currency = ($(this).val());
+        var users_currencies = JSON.parse('{{users_currencies | tojson}}')
+        for (item of users_currencies) {
+            if (item.currency == currency)
+                $('.amount').text(item.balance)
+        }
+    })
 </script>
 
 {% endblock %}

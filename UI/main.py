@@ -106,7 +106,28 @@ def exchange():
     users_currencies = [item['currency'] for item in getUsersCurrencies(session['user']['email'])]
     return render_template("exchange.html", user=session['user'], currency_dictionary=currency_dictionary, users_currencies=users_currencies)
 
-#@app.route('/exchanging')
+@app.route('/exchanging', methods=['POST'])
+def exchanging():
+    users_currencies = [item['currency'] for item in getUsersCurrencies(session['user']['email'])]
+
+    email=request.form['email']
+    ammountToExchange=request.form['ammountToExchange']
+    currencyToExchange=request.form['currencyToExchange']
+    usersCurrency=request.form['usersCurrencies']
+    headers = {'Content-type' : 'application/json', 'Accept' : 'text/plain'}
+    body = json.dumps({'ammountToExchange': ammountToExchange, 'currencyToExchange':currencyToExchange, 'email':session['user']['email'], 'usersCurrency':usersCurrency })
+    req = requests.post("http://127.0.0.1:5001/api/exchanging", data = body, headers=headers)
+    
+    mess=''
+    if req.status_code==400:
+        mess='Not enough money'
+        users_currencies = [item['currency'] for item in getUsersCurrencies(session['user']['email'])]
+
+        return render_template("exchange.html", user=session['user'], message=mess, currency_dictionary=currency_dictionary, users_currencies=users_currencies)
+
+    updateUserInSession(email)
+
+    return render_template("profile.html", user=session['user'], message=mess, users_currencies=users_currencies)
 
 @app.route('/addMoney')
 def addMoney():
@@ -117,12 +138,13 @@ def addMoney():
 def addingMoney():
     user=session['user']
     email=user['email']
+    print(email)
     ammountToAdd=request.form['ammountToAdd']
     headers = {'Content-type' : 'application/json', 'Accept' : 'text/plain'}
     body = json.dumps({'email' : email, 'ammount' : ammountToAdd})
     req = requests.post("http://127.0.0.1:5001/api/addingMoney", data = body, headers = headers)
     updateUserInSession(email)
-    return render_template('profile.html', user=session['user'], message=req.json())
+    return render_template('profile.html', user=session['user'], message=req.json(), response=req)
 
 @app.route('/login', methods =['POST'])
 def login():
@@ -147,7 +169,7 @@ def login():
 @app.route('/profile')
 def profile():
     transaction_history = getTransactionHistory()
-    return render_template('profile.html', user = session['user'],currency_dictionary = currency_dictionary, transaction_history = transaction_history)
+    return render_template('profile.html', user = session['user'],currency_dictionary = currency_dictionary, transaction_history = transaction_history, users_currencies=getUsersCurrencies(session['user']['email']))
 
 @app.route('/update')
 def update():
