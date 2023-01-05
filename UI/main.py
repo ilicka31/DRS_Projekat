@@ -91,24 +91,24 @@ def verifying():
     _message = response['message'] 
     _code = req.status_code
     session['user']['isVerified']=1
+
     if _code == 200:
         flash(_message)
-        return render_template('profile.html', user=session['user'])
+        return render_template('profile.html', user=session['user'], currency_dictionary=currency_dictionary, users_currencies=getUsersCurrencies(session['user']['email']))
 
     if _code == 400:
         flash(_message)
-        return render_template("profile.html", user=session['user'])
+        return render_template("profile.html", user=session['user'], currency_dictionary=currency_dictionary, users_currencies=getUsersCurrencies(session['user']['email']))
         
 @app.route('/exchange')
 def exchange():
 
-
     users_currencies = [item['currency'] for item in getUsersCurrencies(session['user']['email'])]
+
     return render_template("exchange.html", user=session['user'], currency_dictionary=currency_dictionary, users_currencies=users_currencies)
 
 @app.route('/exchanging', methods=['POST'])
 def exchanging():
-    users_currencies = [item['currency'] for item in getUsersCurrencies(session['user']['email'])]
 
     email=request.form['email']
     ammountToExchange=request.form['ammountToExchange']
@@ -123,11 +123,11 @@ def exchanging():
         mess='Not enough money'
         users_currencies = [item['currency'] for item in getUsersCurrencies(session['user']['email'])]
 
-        return render_template("exchange.html", user=session['user'], message=mess, currency_dictionary=currency_dictionary, users_currencies=users_currencies)
+        return render_template("exchange.html", user=session['user'], message=mess, currency_dictionary=currency_dictionary, users_currencies=getUsersCurrencies(session['user']['email']))
 
     updateUserInSession(email)
 
-    return render_template("profile.html", user=session['user'], message=mess, users_currencies=users_currencies)
+    return render_template("profile.html", user=session['user'], message=mess, users_currencies=getUsersCurrencies(session['user']['email']))
 
 @app.route('/addMoney')
 def addMoney():
@@ -144,7 +144,9 @@ def addingMoney():
     body = json.dumps({'email' : email, 'ammount' : ammountToAdd})
     req = requests.post("http://127.0.0.1:5001/api/addingMoney", data = body, headers = headers)
     updateUserInSession(email)
-    return render_template('profile.html', user=session['user'], message=req.json(), response=req)
+    users_currencies = [item['currency'] for item in getUsersCurrencies(session['user']['email'])]
+
+    return render_template('profile.html', user=session['user'], message=req.json(), response=req, currency_dictionary=currency_dictionary, users_currencies=getUsersCurrencies(session['user']['email']))
 
 @app.route('/login', methods =['POST'])
 def login():

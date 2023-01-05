@@ -29,7 +29,7 @@ def register():
     
     registerUser(_firstName, _lastName, _email, _password, _address, _city, _country, _phone, _balance, _currency,_verified)
     retVal = {'message' : 'User successfully registered'}, 200
-
+    addUserToUserbalanceDB(_email, _balance, _currency)
 
     return retVal
 
@@ -136,6 +136,12 @@ def userExists(email: str) -> bool :
 def registerUser(name, lastname, email, password, address, city, country, phoneNum, balance, currency,verified):
     cursor = mysql.connection.cursor()
     cursor.execute(''' INSERT INTO user VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)''',[ name, lastname, email, password, address, city, country, phoneNum, balance, currency,verified ])
+    mysql.connection.commit()
+    cursor.close()
+
+def addUserToUserbalanceDB(email, balance, currency):
+    cursor = mysql.connection.cursor()
+    cursor.execute(''' INSERT INTO userbalance (email, currency, balance) VALUES(%s, %s, %s)''',[email, 'USD',balance ])
     mysql.connection.commit()
     cursor.close()
 
