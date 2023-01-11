@@ -1,6 +1,11 @@
 from flask import Flask, render_template, request, json, session, flash, redirect,url_for
 import json
 import requests
+import sha3
+import random
+import struct
+from datetime import datetime
+
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = "12345abv"
@@ -68,6 +73,34 @@ def verify():
 def logout():
     session['user']= None
     return render_template('registration.html')
+
+@app.route('/createTr')
+def createTr():
+    return render_template("createTransaction.html", user=session['user'])
+
+@app.route('/createTransaction', methods = ['POST'])
+def createTransaction():
+    _sender = session['user']['email']
+    _balance = session['user']['balance']
+    _receiver = request.form['receiver']
+    _amount = request.form['amount']
+    _amountF = float(_amount)
+    _currency = request.form['currency']
+    _status = 'processing'
+    random_int = random.getrandbits(32)
+    #_time = datetime.now()
+    #date_string = _time.strftime("%Y-%m-%d %H:%M:%S")
+    
+    _hashString = generateHash(_sender, _receiver, _amountF, random_int)
+    headers = {'Content-type' : 'application/json', 'Accept' : 'text/plain'}
+    body = json.dumps({'hashID' : _hashString, 'sender': _sender, 'balance' : _balance, 'receiver':_receiver, 'amount':_amount, 'currency':_currency, 'status': _status })
+    req = requests.post("http://127.0.0.1:5001/api/createTransaction", data = body, headers=headers)
+    
+    response = (req.json())
+    _message = response['message'] 
+    _code = req.status_code
+    
+    return render_template('profile.html', user=session['user'])
 
 @app.route('/verify')
 def verify():
@@ -213,7 +246,14 @@ def updateuser():
 
 countries_dictionary={}
 
-
+def generateHash(_sender, _receiver, _amount, rand_int):
+    input_data = _sender.encode() + _receiver.encode() + struct.pack("!d", _amount) + struct.pack("I", rand_int)
+    
+    keccak256 = sha3.keccak_256()
+    keccak256.update(input_data)
+    
+    keccak_hash = keccak256.hexdigest()
+    return keccak_hash
 
 def updateUserInSession(email):
     # Get updated user and put it in session['user']

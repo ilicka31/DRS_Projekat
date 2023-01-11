@@ -5,6 +5,7 @@ import requests
 transactions_blueprint = Blueprint('transactions_blueprint', __name__)
 
 from main import mysql
+from datetime import datetime
 
 
 @transactions_blueprint.route('/exchanging', methods=['POST'])
@@ -63,6 +64,75 @@ def getUsersCurrencies():
     content=flask.request.json
     email=content['email']
     return getUsersCurrenciesFromDB(email)
+
+@transactions_blueprint.route('/createTransaction', methods = ['POST'])
+def createTransaction():
+    content = flask.request.json
+    
+    _hashID = content['hashID']
+    _sender = content['sender']
+    _receiver = content['receiver']
+    _time = datetime.now();
+    _amount = content['amount']
+    _amountF = float(_amount)
+    _currency = content['currency']
+    _status = content['status']
+    _balance = content['balance']
+    
+    
+    if(float(_amount) > _balance):
+        return {'message':'You do not have enough balance on your acc for this transaction '}, 400
+    
+    if(isReceiverValid(_receiver)):
+        tr = creatingTr(_hashID, _sender, _receiver, _time, _amount, _currency, _status)
+        
+    if(transactionExists(_hashID)):
+        retval = {'message' : 'Successfull creating transaction'}, 200
+    else:
+        retval = {'message' : 'Error with creating transaction'}, 400
+    
+    return retval
+
+def transactionExists(hashID: str) -> bool :
+    cursor = mysql.connection.cursor()
+    cursor.execute("SELECT * FROM transactions WHERE hashID = %s", [hashID])
+    transaction = cursor.fetchone()
+    cursor.close()
+    if (transaction != None):
+        return True
+    else:
+        return False
+
+
+def isReceiverValid(email: str) -> bool:
+    cursor=mysql.connection.cursor()
+    cursor.execute("SELECT * FROM user WHERE email = %s and isVerified = 1;", [email])
+    receiver = cursor.fetchone()
+    cursor.close()
+    if (receiver != None):
+        return True 
+    else:
+        return False
+        
+def getSendersBalance(email: str) -> float:
+    cursor=mysql.connection.cursor()
+    cursor.execute("SELECT balance FROM user WHERE email = '%s';", [email])
+    balance = cursor.fetchall()
+    cursor.close()
+    return balance
+    
+def creatingTr(_hashID, _sender, _receiver, _time, _amount, _currency, _status):
+    cursor=mysql.connection.cursor()
+    
+    #cursor.execute("UPDATE user SET balance = balance + %f WHERE email = \'%s\';", _amountF, _receiver);
+    #cursor.execute("UPDATE user SET balance = balance - %f WHERE email = \'%s\';", _amountF, _sender);
+    cursor.execute("INSERT INTO transactions VALUES (%s, %s, %s, %s, %s, %s, %s);", [_hashID, _sender, _receiver, _time, _amount, _currency, _status])
+    mysql.connection.commit()
+    transaction = cursor.fetchone()
+    cursor.close()
+    
+    return transaction
+    
 
 
 def getUsersCurrenciesFromDB(email):
