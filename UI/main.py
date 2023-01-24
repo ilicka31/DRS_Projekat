@@ -1,9 +1,7 @@
 from flask import Flask, render_template, request, json, session, flash, redirect,url_for
 import json
 import requests
-import sha3
 import random
-import struct
 from datetime import datetime
 
 
@@ -47,27 +45,6 @@ def register():
         return redirect(url_for('main'))
 
     return render_template('registration.html')
-"""
-@app.route('/verify', methods = ['POST'])
-def verify():
-    user = session['user']
-    headers = {'Content-type' : 'application/json', 'Accept' : 'text/plain'}
-    
-    email = user['email']
-    body = json.dumps({'email' : email})
-    
-    req = requests.post("http://127.0.0.1:5001/api/verify", data = body, headers = headers)
-    response = (req.json())
-    _message = response['message'] 
-    _code = req.status_code
-
-    if _code == 200:
-        updateUserInSession(user['email'])
-        return render_template('profile.html', user = session['user'])
-    if _code == 400:
-        flash(_message)
-        return redirect(url_for('main'))
-"""
 
 @app.route('/logout')
 def logout():
@@ -76,7 +53,7 @@ def logout():
 
 @app.route('/createTr')
 def createTr():
-    return render_template("createTransaction.html", user=session['user'])
+    return render_template("createTransaction.html", user=session['user'], transaction_history = getTransactionHistory(),currency_dictionary=currency_dictionary, users_currencies=getUsersCurrencies(session['user']['email']), message = request.args.get('message'))
 
 @app.route('/createTransaction', methods = ['POST'])
 def createTransaction():
@@ -84,27 +61,24 @@ def createTransaction():
     _balance = session['user']['balance']
     _receiver = request.form['receiver']
     _amount = request.form['amount']
-    _amountF = float(_amount)
     _currency = request.form['currency']
-    _status = 'processing'
-    random_int = random.getrandbits(32)
-    #_time = datetime.now()
-    #date_string = _time.strftime("%Y-%m-%d %H:%M:%S")
     
-    _hashString = generateHash(_sender, _receiver, _amountF, random_int)
     headers = {'Content-type' : 'application/json', 'Accept' : 'text/plain'}
-    body = json.dumps({'hashID' : _hashString, 'sender': _sender, 'balance' : _balance, 'receiver':_receiver, 'amount':_amount, 'currency':_currency, 'status': _status })
+    body = json.dumps({'sender': _sender, 'balance' : _balance, 'receiver':_receiver, 'amount':_amount, 'currency':_currency})
     req = requests.post("http://127.0.0.1:5001/api/createTransaction", data = body, headers=headers)
     
     response = (req.json())
     _message = response['message'] 
     _code = req.status_code
-    
-    return render_template('profile.html', user=session['user'])
+    if(_code == 200):
+        updateUserInSession(_sender)
+        return redirect(url_for("profile"))
+    else:
+        return redirect(url_for('createTr', message = _message))
 
 @app.route('/verify')
 def verify():
-    return render_template("verify.html", user=session['user'])
+    return render_template("verify.html", user=session['user'], transaction_history = getTransactionHistory(),currency_dictionary=currency_dictionary, users_currencies=getUsersCurrencies(session['user']['email']))
 
 @app.route('/verifying', methods =['POST'])
 def verifying():
@@ -127,22 +101,18 @@ def verifying():
 
     if _code == 200:
         flash(_message)
-        return render_template('profile.html', user=session['user'], currency_dictionary=currency_dictionary, users_currencies=getUsersCurrencies(session['user']['email']))
+        return redirect(url_for('profile'))
 
     if _code == 400:
         flash(_message)
-        return render_template("profile.html", user=session['user'], currency_dictionary=currency_dictionary, users_currencies=getUsersCurrencies(session['user']['email']))
-        
+        return redirect(url_for('profile'))
+
 @app.route('/exchange')
 def exchange():
-
-    users_currencies = [item['currency'] for item in getUsersCurrencies(session['user']['email'])]
-
-    return render_template("exchange.html", user=session['user'], currency_dictionary=currency_dictionary, users_currencies=users_currencies)
+    return render_template("exchange.html", user=session['user'], transaction_history = getTransactionHistory(),currency_dictionary=currency_dictionary, users_currencies=getUsersCurrencies(session['user']['email']))
 
 @app.route('/exchanging', methods=['POST'])
 def exchanging():
-
     email=request.form['email']
     ammountToExchange=request.form['ammountToExchange']
     currencyToExchange=request.form['currencyToExchange']
@@ -154,32 +124,40 @@ def exchanging():
     mess=''
     if req.status_code==400:
         mess='Not enough money'
-        users_currencies = [item['currency'] for item in getUsersCurrencies(session['user']['email'])]
-
-        return render_template("exchange.html", user=session['user'], message=mess, currency_dictionary=currency_dictionary, users_currencies=getUsersCurrencies(session['user']['email']))
+        return render_template("exchange.html", user=session['user'], message=mess, currency_dictionary=currency_dictionary, transaction_history = getTransactionHistory(), users_currencies=getUsersCurrencies(session['user']['email']))
 
     updateUserInSession(email)
 
-    return render_template("profile.html", user=session['user'], message=mess, users_currencies=getUsersCurrencies(session['user']['email']))
-
+    return redirect(url_for('profile'))
+    
 @app.route('/addMoney')
 def addMoney():
-
-    return render_template("addMoney.html", user=session['user'])
+    return render_template("addMoney.html", user=session['user'], transaction_history = getTransactionHistory(),currency_dictionary=currency_dictionary, users_currencies=getUsersCurrencies(session['user']['email']), message = request.args.get('_message'))
 
 @app.route('/addingMoney', methods=['POST'])
 def addingMoney():
     user=session['user']
     email=user['email']
-    print(email)
     ammountToAdd=request.form['ammountToAdd']
+    _cardNumber = request.form['card']
+    _month = request.form['month']
+    _year = request.form['year']
+    _cvv = request.form['cvv']
+
+    _monthNum = datetime.strptime(_month, '%B').month
+    _expDate ="0"+str(_monthNum)+"/"+str(_year)[-2:]    
+
+    _message = ""
+    if("4242424242424242" != str(_cardNumber).replace(" ", "") or "123" != str(_cvv).replace(" ","") or "02/23" != str(_expDate)):
+        _message = "Invalid card information inserted!"
+        return redirect(url_for('addMoney', _message = _message))
+
     headers = {'Content-type' : 'application/json', 'Accept' : 'text/plain'}
     body = json.dumps({'email' : email, 'ammount' : ammountToAdd})
     req = requests.post("http://127.0.0.1:5001/api/addingMoney", data = body, headers = headers)
     updateUserInSession(email)
-    users_currencies = [item['currency'] for item in getUsersCurrencies(session['user']['email'])]
 
-    return render_template('profile.html', user=session['user'], message=req.json(), response=req, currency_dictionary=currency_dictionary, users_currencies=getUsersCurrencies(session['user']['email']))
+    return redirect(url_for('profile'))
 
 @app.route('/login', methods =['POST'])
 def login():
@@ -201,10 +179,10 @@ def login():
         flash(_message)
         return redirect(url_for('main'))
 
+
 @app.route('/profile')
 def profile():
-    transaction_history = getTransactionHistory()
-    return render_template('profile.html', user = session['user'],currency_dictionary = currency_dictionary, transaction_history = transaction_history, users_currencies=getUsersCurrencies(session['user']['email']))
+    return render_template('profile.html', user = session['user'], currency_dictionary = currency_dictionary, transaction_history = getTransactionHistory() , users_currencies=getUsersCurrencies(session['user']['email']))
 
 @app.route('/update')
 def update():
@@ -235,25 +213,9 @@ def updateuser():
 
     if _code == 200:
         return redirect(url_for('profile'))
-    return render_template('profile.html')
-
-
-
-#@app.route('/changeCurrency', methods=['POST'])
-#def change():
-#    newCurrency=request.form['currencyChosenByTheUser']
-#    return render_template('profile.html', user = session['user'],currency_dictionary = refreshCurrencyList(newCurrency))
+    return redirect(url_for('profile'))
 
 countries_dictionary={}
-
-def generateHash(_sender, _receiver, _amount, rand_int):
-    input_data = _sender.encode() + _receiver.encode() + struct.pack("!d", _amount) + struct.pack("I", rand_int)
-    
-    keccak256 = sha3.keccak_256()
-    keccak256.update(input_data)
-    
-    keccak_hash = keccak256.hexdigest()
-    return keccak_hash
 
 def updateUserInSession(email):
     # Get updated user and put it in session['user']

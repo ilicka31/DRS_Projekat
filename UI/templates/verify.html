@@ -10,14 +10,14 @@
   <div class="modal-dialog" role="document">
 
     <form action="http://127.0.0.1:5000/verifying" method="post">
-    <div class="modal-content" style="width:400px;">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Credit card verification</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      
+      <div class="modal-content" style="width:400px;">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Credit card verification</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+
         <div class="modal-body" style="max-height: 30vh">
 
 
@@ -27,7 +27,7 @@
           <!-- Date Field -->
 
           <div class="date-field">
-            <div class="month" >
+            <div class="month">
               <select name="month">
                 <option value="january">January</option>
                 <option value="february">February</option>
@@ -43,7 +43,7 @@
                 <option value="december">December</option>
               </select>
             </div>
-            <div class="year" >
+            <div class="year">
               <select name="year">
                 <option value="2016">2016</option>
                 <option value="2017">2017</option>
@@ -62,7 +62,7 @@
           <!-- Card Verification Field -->
           <div class="card-verification">
             <div class="cvv-input">
-              <input type="text" name= "cvv" placeholder="CVV">
+              <input type="text" name="cvv" placeholder="CVV">
             </div>
             <div class="cvv-details">
               <p>3 or 4 digits usually found <br> on the signature strip</p>
@@ -75,9 +75,9 @@
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
           <button type="submit" class="btn btn-primary">Verify!</button>
         </div>
-      
-    </div>
-  </form>
+
+      </div>
+    </form>
   </div>
 </div>
 {% endblock %}

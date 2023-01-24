@@ -15,7 +15,7 @@
 </head>
 
 <body>
-    <div class="container d-flex justify-content-lg-center mt-5">
+    <div class="container d-flex justify-content-lg-left mt-5" style="margin-left:5rem;">
         <div class="container d-flex justify-content-lg-left mt-5">
             <div class="row" style="margin-right: 20px; width: 100vh;">
                 <div class="card" style="margin-bottom: 20px;">
@@ -41,12 +41,13 @@
                         </div>
                         <div class="d-flex flex-column text-right mr-2">
                             <span class="current-balance">Current Balance</span>
-                            <span><select id="currencyBalance">
-                                {%for currency in users_currencies%}
-                                    <option value="{{currency.currency}}">{{currency.currency}}</option>
-                                {%endfor%}
-                            </select></span>
-                            <span class="amount"><span class="dollar-sign"> </span>{{user.balance}}
+                            <span>
+                                <select id="currencyBalance">
+                                    <option value="USD" data-balance="{{user.balance}}">USD {{user.balance}}</option>
+                                    {%for currency in users_currencies%}
+                                        <option value="{{currency.currency}}" data-balance="{{currency.balance}}">{{currency.currency}} {{currency.balance}}</option>
+                                    {%endfor%}
+                                </select>
                             </span>
                         </div>
                     </div>
@@ -84,32 +85,21 @@
                 </div>
 
                 <!---------------------------------------------------!-->
-                <div>{% if user.isVerified%}
-                    <form action="http://127.0.0.1:5000/exchange">
-                        <div>
-                            <input class="btn btn-secondary" type="submit" value="exchange">
-
-                        </div>
-                    </form>
-                    {%endif%}
-                </div>
-                <div class="card">
+                
+                <div class="card" style="height:50vh">
+                    <div class="exchange-button">{% if user.isVerified%}
+                        <form action="http://127.0.0.1:5000/exchange">
+                            <div>
+                                <input class="btn btn-secondary" type="submit" value="Exchange">
+                            </div>
+                        </form>
+                        {%endif%}
+                    </div>
                     <div class="top-container">
                         <h5 class="card-title">List of crypto currency</h5>
                     </div>
-                    <!--<form action="http://127.0.0.1:5000/changeCurrency" method="post">
-                        <input list="currencies" name="currencyChosenByTheUser" placeholder="Chose currency" />
-                        <datalist id="currencies">
-                            {%for currency in currency_dictionary%}
-                                   <option value="{{currency}}">{{currency}}</option>
-                            {%endfor%}
-                        </datalist>
-                        <input type="submit" value="Change currency" />
-                    </form>-->
-
-
                     <div class="card-body d-flex ">
-                        <div class="w-100 " style="overflow-y:scroll ">
+                        <div class="w-100 " style="overflow-y:scroll; height:25vh; ">
                             {%for currency in currency_dictionary%}
                             <div class="middle-container d-flex justify-content-between align-items-center mt-3 p-2 ">
                                 {{currency}} {{currency_dictionary[currency]}}
@@ -119,18 +109,19 @@
                     </div>
                 </div>
             </div>
-
-            <div>
-                <form action="http://127.0.0.1:5000/createTr">
-                    <input class="btn btn-secondary" type="submit" value="Create transaction"> 
-                </form>    
-            </div>
             
-            <div class="col " style="width:120vh; ">
-                <div class="row " style="width:120vh; ">
-                    <div class="card " style="width:120vh; ">
+            <div class="col " style="width:130vh; height:85vh;">
+                <div class="row " style="width:130vh; height:85vh;">
+                    <div class="card " style="width:130vh; height:85vh;">
+                        {% if user.isVerified %}
+                        <div>
+                            <form action="http://127.0.0.1:5000/createTr">
+                                <input class="btn btn-secondary" type="submit" value="Create transaction"> 
+                            </form>    
+                        </div>
+                        {% endif %}
                         <div class="card-body d-flex ">
-                            <div class="w-100 " style="overflow-y:scroll ">
+                            <div class="w-100 " style="overflow-y:scroll; height:70vh;">
                                 <div class="table-responsive mt-3 ">
                                     <table class="table ">
                                         <thead>
@@ -188,14 +179,25 @@
             .forEach(tr => tbody.appendChild(tr));
     })));
 
-    $('#currencyBalance').change(function() {
+    /*$('#currencyBalance').change(function() {
         currency = ($(this).val());
         var users_currencies = JSON.parse('{{users_currencies | tojson}}')
+        var user_balance = {{user.balance}}
         for (item of users_currencies) {
+            console.log(item.balance)
             if (item.currency == currency)
                 $('.amount').text(item.balance)
+            else
+                $('.amount').text(user_balance)
         }
-    })
+    })*/
+
+    $('#currencyBalance').change(function() {
+        var selectedCurrency = $(this).val();
+        var selectedOption = $("#currencyBalance option[value='" + selectedCurrency + "']");
+        var balance = selectedOption.data('balance');
+        $('.amount').text(balance);
+    });
 </script>
 
 {% endblock %}

@@ -1,8 +1,8 @@
 body{
-	background-color: #4070f4;
 	display: flex;
     align-items: center;
     justify-content: center;
+	background-image: url("../images/background.png");
 }
 .card{
 	background-color: rgb(203, 208, 236);
@@ -118,4 +118,9 @@ body{
 
 th {
 	cursor: pointer;
+}
+
+.exchange-button {
+	text-align: right;
+
 }
