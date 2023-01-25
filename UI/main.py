@@ -62,7 +62,8 @@ def createTransaction():
     _receiver = request.form['receiver']
     _amount = request.form['amount']
     _currency = request.form['currency']
-    
+    if(_sender == _receiver):
+        return redirect(url_for('createTr', message = "Can't initiate a transaction to yourself!"))
     headers = {'Content-type' : 'application/json', 'Accept' : 'text/plain'}
     body = json.dumps({'sender': _sender, 'balance' : _balance, 'receiver':_receiver, 'amount':_amount, 'currency':_currency})
     req = requests.post("http://127.0.0.1:5001/api/createTransaction", data = body, headers=headers)
