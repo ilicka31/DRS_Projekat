@@ -14,7 +14,14 @@ mysql = MySQL(app)
 from blueprints.transactions import transactions_blueprint
 from blueprints.users import user_blueprint  
 
+def start_process():
+    from blueprints.transactions import transactionProcess, queue, multiprocessing
+    process = multiprocessing.Process(target=transactionProcess, args=[queue])
+    process.start()
+
 if __name__ == "__main__":    
     app.register_blueprint(user_blueprint, url_prefix = '/api') 
     app.register_blueprint(transactions_blueprint, url_prefix = '/api')    
+    start_process()
     app.run(port=5001)
+   

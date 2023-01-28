@@ -1,15 +1,18 @@
 from flask import Blueprint, jsonify
-import flask
-import requests
-import sha3
-import random
-import struct
+import flask, requests, sha3, random, struct, threading
 
 transactions_blueprint = Blueprint('transactions_blueprint', __name__)
 
 from main import mysql
 from datetime import datetime
 
+from time import sleep
+from models.transaction import Transaction
+import multiprocessing
+from multiprocessing import Queue
+#from main import mysql
+import MySQLdb
+queue = Queue()
 
 @transactions_blueprint.route('/exchanging', methods=['POST'])
 def exchanging():
@@ -82,12 +85,12 @@ def createTransaction():
 
     _sender = content['sender']
     _receiver = content['receiver']
-    _time = datetime.now()
+    #_time = datetime.now()
     _amount = content['amount']
     _currency = content['currency']
     _balance = content['balance']
 
-    _status = 'processing'
+    _status = 'PROCESSING'
     random_int = random.getrandbits(32)
     _amountF = float(_amount)
     _time = datetime.now()
@@ -95,11 +98,17 @@ def createTransaction():
     
     _hashID = generateHash(_sender, _receiver, _amountF, random_int)
     
-    if(_amountF > _balance):
-        return {'message':'You do not have enough balance on your acc for this transaction '}, 400
+    #if(_amountF > _balance):
+    #   return {'message':'You do not have enough balance on your acc for this transaction '}, 400
     
     if(isReceiverValid(_receiver)):
-        message = creatingTr(_hashID, _sender, _receiver, _time, _amount, _currency, _status)
+       # message = creatingTr(_hashID, _sender, _receiver, _time, _amount, _currency, _status)
+        cursor=mysql.connection.cursor()
+        cursor.execute("INSERT INTO transactions VALUES (%s, %s, %s, %s, %s, %s, %s);", [_hashID, _sender, _receiver, _time, _amount, _currency, _status])
+        mysql.connection.commit()
+        cursor.close()
+        thread =threading.Thread(target=transactionThread, args=(_hashID, _sender, _receiver, _time, _amount, _currency, _status, _balance))
+        thread.start()
         return  {'message':'Successfully created transaction'}, 200
 
     return {'message' : 'Unsuccessfull transaction'}, 400
@@ -120,31 +129,66 @@ def getSendersBalance(email: str) -> float:
     balance = cursor.fetchall()
     cursor.close()
     return balance
-    
-def creatingTr(_hashID, _sender, _receiver, _time, _amount, _currency, _status):
-    cursor=mysql.connection.cursor()
+
+def transactionThread(_hashID, _sender, _receiver, _time, _amount, _currency, _status, _balance):
+    sleep(2) #proveriti koliko treba cekati
+    #napravi se nova transakcija i smesti u queue
+    tr = Transaction(_hashID,_sender,_receiver,_amount,_time,_currency,_status)
+    queue.put(tr)
+
+
+def transactionProcess(queue : Queue):
+    while(1):
+        transaction = queue.get()
+     
+        # otvaranje nove konekcije u threadu
+        cnx = MySQLdb.connect(host="localhost",
+                            user="root",
+                            passwd="",
+                            db="drs_baza")
+
+        cursor = cnx.cursor()
+        cursor.execute(''' SELECT balance FROM user WHERE email = %s ''', [transaction.sender])
+        response = cursor.fetchone()
+        senderBalance = float(response[0])
+
+        if(float(transaction.amount) > senderBalance): #stanje odbijena
+             cursor.execute(''' UPDATE transactions SET status = %s WHERE hash = %s''', ['FAIL', transaction.id])
+        else: #stanje obradjena
+            creatingTr(transaction.id, transaction.sender, transaction.receiver,transaction.date, transaction.amount, transaction.currency, transaction.state,cursor)
+        cnx.commit()
+
+       # cursor.execute('''SELECT * FROM transactions''')
+       # transaction_history_update = cursor.fetchall()
+       # socketio.emit('transactions_finished', transaction_history_update)
+        cursor.close()
+        cnx.close()
+
+
+def creatingTr(_hashID, _sender, _receiver, _time, _amount, _currency, _status, cursor):
+    #cursor=mysql.connection.cursor()
     if(_currency == "USD"):
         cursor.execute("SELECT balance FROM user WHERE email = %s", [_sender])
         oldBalance = cursor.fetchone()
-        newBalance = oldBalance['balance'] - float(_amount)
+        newBalance = oldBalance[0] - float(_amount)
         newBalance = round(newBalance,2)
         cursor.execute("UPDATE user SET balance=%s WHERE email=%s", [newBalance, _sender])
     else:
-        cursor=mysql.connection.cursor()
+       # cursor=mysql.connection.cursor()
         result= cursor.execute("SELECT balance FROM  userbalance WHERE email=%s AND currency=%s", [_sender, _currency])
         balance=cursor.fetchone() 
-        newBalance = balance['balance'] - float(_amount)
+        newBalance = balance[0] - float(_amount)
         newBalance = round(newBalance,2)
         cursor.execute("UPDATE userbalance SET balance=%s WHERE email=%s AND currency=%s", [newBalance, _sender, _currency])
     
     if(_currency == "USD"):
         cursor.execute("SELECT balance FROM user WHERE email = %s", [_receiver])
         oldBalance = cursor.fetchone()
-        newBalance = oldBalance['balance'] + float(_amount)
+        newBalance = oldBalance[0] + float(_amount)
         newBalance = round(newBalance,2)
         cursor.execute("UPDATE user SET balance=%s WHERE email=%s", [newBalance, _receiver])
     else:
-        cursor=mysql.connection.cursor()
+        #cursor=mysql.connection.cursor()
         result=cursor.execute("SELECT balance FROM  userbalance WHERE email=%s AND currency=%s", [_receiver, _currency])
         balance=cursor.fetchone() 
 
@@ -152,16 +196,15 @@ def creatingTr(_hashID, _sender, _receiver, _time, _amount, _currency, _status):
             amount = round(float(_amount),2)
             cursor.execute("INSERT INTO userbalance (email, currency, balance) VALUES (%s, %s, %s)",[_receiver, _currency, amount])
         else:
-            newBalance = balance['balance'] + float(_amount)
+            newBalance = balance[0] + float(_amount)
             newBalance = round(newBalance,2)
             cursor.execute("UPDATE userbalance SET balance=%s WHERE email=%s AND currency=%s", [newBalance, _receiver, _currency])
-    
-    cursor.execute("INSERT INTO transactions VALUES (%s, %s, %s, %s, %s, %s, %s);", [_hashID, _sender, _receiver, _time, _amount, _currency, _status])
-    mysql.connection.commit()
-    _message = cursor.fetchone()
-    cursor.close()
-    
-    return _message
+
+    cursor.execute(''' UPDATE transactions SET status = %s WHERE hashID = %s''', ('SUCCESS', _hashID))
+   # mysql.connection.commit()
+    #_message = cursor.fetchone()
+    #cursor.close()
+
     
 def getUsersCurrenciesFromDB(email):
     cursor=mysql.connection.cursor()
