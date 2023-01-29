@@ -12,7 +12,6 @@ app.config['SECRET_KEY'] = "12345abv"
 def main():
     return render_template('registration.html')
 
-
 @app.route('/register', methods = ['POST'])
 def register():
     _firstName = request.form['firstName']
@@ -24,7 +23,7 @@ def register():
     _country = request.form['country']
     _phone = request.form['phone']
     _balance = "0"
-    _currency = 'USD'
+    _currency = "USD"
 
     headers = {'Content-type' : 'application/json', 'Accept' : 'text/plain'}
     body = json.dumps({'firstName': _firstName, 'lastName':_lastName, 'email':_email, 'password':_password, 'address':_address, 
@@ -37,11 +36,9 @@ def register():
     _code = req.status_code
     
     if _code == 200:
-        flash(_message)
         return redirect(url_for('main'))
 
     if _code == 400:
-        flash(_message)
         return redirect(url_for('main'))
 
     return render_template('registration.html')
@@ -73,7 +70,7 @@ def createTransaction():
     _code = req.status_code
     if(_code == 200):
         updateUserInSession(_sender)
-        return redirect(url_for("profile"))
+        return redirect(url_for("profile", sender = _sender))
     else:
         return redirect(url_for('createTr', message = _message))
 
@@ -98,14 +95,12 @@ def verifying():
     response = (req.json())
     _message = response['message'] 
     _code = req.status_code
-    session['user']['isVerified']=1
-
+    #session['user']['isVerified']=1
+    updateUserInSession(_email)
     if _code == 200:
-        flash(_message)
         return redirect(url_for('profile'))
 
     if _code == 400:
-        flash(_message)
         return redirect(url_for('profile'))
 
 @app.route('/exchange')
@@ -177,12 +172,14 @@ def login():
         updateUserInSession(_email)
         return redirect(url_for('profile'))
     if _code == 400:
-        flash(_message)
         return redirect(url_for('main'))
 
 
 @app.route('/profile')
 def profile():
+    sender = request.args.get('sender')
+    if sender != None:
+        updateUserInSession(sender)
     return render_template('profile.html', user = session['user'], currency_dictionary = currency_dictionary, transaction_history = getTransactionHistory() , users_currencies=getUsersCurrencies(session['user']['email']))
 
 @app.route('/update')
@@ -217,7 +214,6 @@ def updateuser():
     return redirect(url_for('profile'))
 
 countries_dictionary={}
-
 def updateUserInSession(email):
     # Get updated user and put it in session['user']
     headers = {'Content-type' : 'application/json', 'Accept': 'text/plain'}
@@ -235,6 +231,7 @@ def getCurrencyList():
 def refreshCurrencyList(base_currency : str):
     # base currency is RSD in our case
     req = requests.get("https://api.freecurrencyapi.com/v1/latest?apikey=MmuhzxpAOc1bDgPlzY1t4wrbjW9Q7NW6af3HRDv6&base_currency=" + base_currency)
+    # req = requests.get("https://freecurrencyapi.net/api/v2/latest?apikey=57fbaed0-7177-11ec-a390-0d2dac4cb175&base_currency=" + base_currency)
     currency_dict = (req.json())['data']
 
     # Converts every other currency in base currecy value

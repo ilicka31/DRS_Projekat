@@ -29,7 +29,6 @@ def register():
     
     registerUser(_firstName, _lastName, _email, _password, _address, _city, _country, _phone, _balance, _currency,_verified)
     retVal = {'message' : 'User successfully registered'}, 200
-    addUserToUserbalanceDB(_email, _balance, _currency)
 
     return retVal
 
@@ -52,8 +51,6 @@ def verifying():
     _monthNum = datetime.strptime(_month, '%B').month
     _expDate ="0"+str(_monthNum)+"/"+str(_year)[-2:]    
 
-    #  
-    # _card = card(_email)
     if( "4242424242424242" == str(_cardNumber).replace(" ", "") and "123" == str(_cvv).replace(" ","") and "02/23" ==str(_expDate)):
         #ovde kao treba skinuti taj dolar???
         updateUserVerified(_email)
@@ -68,21 +65,6 @@ def updateUserVerified(email):
     cursor.execute("UPDATE user SET isVerified=true WHERE email = %s ",[email])
     mysql.connection.commit()
     cursor.close()
-
-"""
-@user_blueprint.route('/verify', methods=['POST'])
-def verify():
-    content = flask.request.json
-    email = content['email']
-    verifyUser(email)
-    user = getUser(email)
-    if user == None:
-        retval = {'message' : 'Unsuccesfull verification! '}, 400
-    else:
-        retval = {'message' : 'Account verified! '}, 200
-        
-    return retval
-""" 
 
 @user_blueprint.route('/login', methods=['POST'])
 def login():
@@ -136,12 +118,6 @@ def userExists(email: str) -> bool :
 def registerUser(name, lastname, email, password, address, city, country, phoneNum, balance, currency,verified):
     cursor = mysql.connection.cursor()
     cursor.execute(''' INSERT INTO user VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)''',[ name, lastname, email, password, address, city, country, phoneNum, balance, currency,verified ])
-    mysql.connection.commit()
-    cursor.close()
-
-def addUserToUserbalanceDB(email, balance, currency):
-    cursor = mysql.connection.cursor()
-    cursor.execute(''' INSERT INTO userbalance (email, currency, balance) VALUES(%s, %s, %s)''',[email, 'USD',balance ])
     mysql.connection.commit()
     cursor.close()
 

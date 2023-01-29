@@ -3,9 +3,6 @@
 
 <head>
     <script src="../static/js/jquery-3.6.3.js"></script>
-
-
-
     <link rel="stylesheet" href="../static/css/profile.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
@@ -25,13 +22,6 @@
                         <div class="ml-3">
                             <h5 class="name">{{ user.firstName }} {{ user.lastName }}</h5>
                             <p class="mail">{{ user.email }}</p>
-                        </div>
-                        <div style="position: absolute;right: 2px;top: 215px;">
-                            <form action="http://127.0.0.1:5000/logout">
-                                <div>
-                                    <input class="btn btn-primary" style="background-color: #5957f9;" type="submit" value="Logout">
-                                </div>
-                            </form>
                         </div>
                     </div>
 
@@ -80,7 +70,13 @@
 
                             </div>
                         </div>
-
+                        <div style="margin-left:5px;">
+                            <form action="http://127.0.0.1:5000/logout">
+                                <div>
+                                    <input class="btn btn-primary" style="background-color: #5957f9;" type="submit" value="Logout">
+                                </div>
+                            </form>
+                        </div>
                     </div>
                 </div>
 
@@ -124,6 +120,7 @@
                             <div class="w-100 " style="overflow-y:scroll; height:70vh;">
                                 <div class="table-responsive mt-3 ">
                                     <table class="table ">
+                                        {% if transaction_history is defined and transaction_history|length > 0 %}
                                         <thead>
                                             <tr>
                                                 <th scope="col ">Sender</th>
@@ -135,17 +132,22 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            {% for transaction in transaction_history %}
-                                            <tr>
-                                                <td>{{transaction.sender}}</td>
-                                                <td>{{transaction.receiver}}</td>
-                                                <td>{{transaction.time}}</td>
-                                                <td>{{transaction.amount}}</td>
-                                                <td>{{transaction.currency}}</td>
-                                                <td>{{transaction.status}}</td>
-                                            </tr>
-                                            {% endfor %}
+                                            
+                                                {% for transaction in transaction_history %}
+                                                <tr>
+                                                    <td>{{transaction.sender}}</td>
+                                                    <td>{{transaction.receiver}}</td>
+                                                    <td>{{transaction.time}}</td>
+                                                    <td>{{transaction.amount}}</td>
+                                                    <td>{{transaction.currency}}</td>
+                                                    <td>{{transaction.status}}</td>
+                                                </tr>
+                                                {% endfor %}
+                                            
                                         </tbody>
+                                        {% else %} 
+                                            <tr><td style="color:royalblue; font-size:35px; text-align:center;">You have no transactions!</td></tr>
+                                        {% endif %}
                                     </table>
                                 </div>
                             </div>
@@ -178,19 +180,6 @@
             .sort(comparer(Array.from(th.parentNode.children).indexOf(th), this.asc = !this.asc))
             .forEach(tr => tbody.appendChild(tr));
     })));
-
-    /*$('#currencyBalance').change(function() {
-        currency = ($(this).val());
-        var users_currencies = JSON.parse('{{users_currencies | tojson}}')
-        var user_balance = {{user.balance}}
-        for (item of users_currencies) {
-            console.log(item.balance)
-            if (item.currency == currency)
-                $('.amount').text(item.balance)
-            else
-                $('.amount').text(user_balance)
-        }
-    })*/
 
     $('#currencyBalance').change(function() {
         var selectedCurrency = $(this).val();

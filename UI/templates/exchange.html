@@ -28,9 +28,9 @@
                     </button>
                 </div>
                 <div class="modal-body" style="max-height: 30vh">
-
-                    <label for="message" class="lblMessage">{{message}}</label>
-
+                    {% if message!=None %}
+                    <p style="margin-left:10px; color:red;" id="exampleModalLabel">{{message}}</p>
+                    {% endif %}
                     <input type="number" name="ammountToExchange" class="ammountToExchange"
                         placeholder="How much you want to exchange">
                     <input type="text" hidden value="{{user.email}}" name="email">
