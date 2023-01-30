@@ -81,7 +81,7 @@
                 </div>
 
                 <!---------------------------------------------------!-->
-                
+
                 <div class="card" style="height:50vh">
                     <div class="exchange-button">{% if user.isVerified%}
                         <form action="http://127.0.0.1:5000/exchange">
@@ -105,35 +105,35 @@
                     </div>
                 </div>
             </div>
-            
-            <div class="col " style="width:130vh; height:85vh;">
-                <div class="row " style="width:130vh; height:85vh;">
-                    <div class="card " style="width:130vh; height:85vh;">
+
+            <div class="col " style="width:130vh; height:110%;">
+                <div class="row " style="width:130vh; height:100%;">
+                    <div class="card " style="width:130vh; height:100%;">
                         {% if user.isVerified %}
+
+
+                        <form action="http://127.0.0.1:5000/filter" , method="post">
+
+                            Sender: <input type="text" name="sender" style="width: 100px;"> Receiver: <input type="text" name="receiver" style="width: 100px;"> Min: <input type="number" name="amountMin" style="width: 70px;"> Max:
+                            <input type="number" name="amountMax" style="width: 70px;"> Currency: <input type="text" name="currency" style="width: 70px;"> Status:
+                            <input type="text" name="status" id="status" style="width:70px">
+
+
+                            <input class="btn btn-secondary" type="submit" value="Filter">
+
+                        </form>
+
                         <div>
                             <form action="http://127.0.0.1:5000/createTr">
-                                <input class="btn btn-secondary" type="submit" value="Create transaction"> 
-                            </form>    
+                                <br>
+                                <br>
+                                <input class="btn btn-secondary" type="submit" value="Create transaction">
+                            </form>
                         </div>
-
-                        <form action="http://127.0.0.1:5000/filter", method="post"> 
-                           
-                            Sender: <input type="text" name="sender">
-                            Receiver: <input type="text" name="receiver">
-                            Amount min: <input type="number" name="amountMin">
-                            Amount max: <input type="number" name="amountMax">
-                            Currency: <input type="text" name = "currency">
-                            Status: <input type="text" name = "status">
-                            Time (use exact format): <input type="text" name="time">
-
-                            <input class="btn btn-secondary" type="submit" value="Use filters for transactions"> 
-                                
-                        </form>   
-
                         {% endif %}
                         <div class="card-body d-flex ">
                             <div class="w-100 " style="overflow-y:scroll; height:70vh;">
-                                <div class="table-responsive mt-3 ">
+                                <div class="table-responsive mt-3 " style="overflow:scroll;">
                                     <table class="table ">
                                         {% if transaction_history is defined and transaction_history|length > 0 %}
                                         <thead>
@@ -147,21 +147,23 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            
-                                                {% for transaction in transaction_history %}
-                                                <tr>
-                                                    <td>{{transaction.sender}}</td>
-                                                    <td>{{transaction.receiver}}</td>
-                                                    <td>{{transaction.time}}</td>
-                                                    <td>{{transaction.amount}}</td>
-                                                    <td>{{transaction.currency}}</td>
-                                                    <td>{{transaction.status}}</td>
-                                                </tr>
-                                                {% endfor %}
-                                            
+
+                                            {% for transaction in transaction_history %}
+                                            <tr>
+                                                <td>{{transaction.sender}}</td>
+                                                <td>{{transaction.receiver}}</td>
+                                                <td>{{transaction.time}}</td>
+                                                <td>{{transaction.amount}}</td>
+                                                <td>{{transaction.currency}}</td>
+                                                <td>{{transaction.status}}</td>
+                                            </tr>
+                                            {% endfor %}
+
                                         </tbody>
-                                        {% else %} 
-                                            <tr><td style="color:royalblue; font-size:35px; text-align:center;">You have no transactions!</td></tr>
+                                        {% else %}
+                                        <tr>
+                                            <td style="color:royalblue; font-size:35px; text-align:center;">You have no transactions!</td>
+                                        </tr>
                                         {% endif %}
                                     </table>
                                 </div>

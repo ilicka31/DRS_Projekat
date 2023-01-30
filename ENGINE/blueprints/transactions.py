@@ -1,7 +1,8 @@
 from flask import Blueprint, jsonify
-import flask, requests, sha3, random, struct, threading
+import flask, requests, random, struct, threading
 import json
-
+from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.primitives import hashes
 transactions_blueprint = Blueprint('transactions_blueprint', __name__)
 
 from main import mysql
@@ -240,7 +241,6 @@ def filterTransactions():
     _amountMin = content['amountMin']
     _amountMax = content['amountMax']
     _currency = content['currency']
-    _time = content['time']
     _status = content['status']
     transactions = transactions.json
     transactionsNew = []
@@ -263,11 +263,11 @@ def filterTransactions():
     for obj in transactions:
         if(_amountMax == 0):
             if((_sender.upper() in obj['sender'].upper()) and (_receiver.upper() in obj['receiver'].upper()) and (_amountMin < obj['amount']) and
-               (_time.upper() in obj['time'].upper()) and (_status.upper() in obj['status'].upper()) and (_currency.upper() in obj['currency'].upper())):
+                (_status.upper() in obj['status'].upper()) and (_currency.upper() in obj['currency'].upper())):
                 transactionsNew.append(obj)
         else:
             if((_sender.upper() in obj['sender'].upper()) and (_receiver.upper() in obj['receiver'].upper()) and (_amountMin < obj['amount']) and (_amountMax > obj['amount']) and
-               (_time.upper() in obj['time'].upper()) and (_status.upper() in obj['status'].upper()) and (_currency.upper() in obj['currency'].upper())):
+                (_status.upper() in obj['status'].upper()) and (_currency.upper() in obj['currency'].upper())):
                 transactionsNew.append(obj)
                 
     
@@ -314,11 +314,13 @@ def userExists(email: str) -> bool :
     else:
         return False
 
+
+
 def generateHash(_sender, _receiver, _amount, rand_int):
     input_data = _sender.encode() + _receiver.encode() + struct.pack("!d", _amount) + struct.pack("I", rand_int)
     
-    keccak256 = sha3.keccak_256()
-    keccak256.update(input_data)
+    digest = hashes.Hash(hashes.SHA3_256(), backend=default_backend())
+    digest.update(input_data)
     
-    keccak_hash = keccak256.hexdigest()
+    keccak_hash = digest.finalize().hex()
     return keccak_hash

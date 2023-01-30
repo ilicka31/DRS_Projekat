@@ -59,14 +59,13 @@ def filter():
     _amountMin = request.form['amountMin']
     _amountMax = request.form['amountMax']
     _currency = request.form['currency']
-    _time = request.form['time']
     _status = request.form['status']
     user = session['user']
     _email = session['user']['email']
     
     headers = {'Content-type' : 'application/json', 'Accept' : 'text/plain'}
     body = json.dumps({'sender' : _sender, 'receiver' : _receiver, 'amountMin' : _amountMin, 
-                       'amountMax': _amountMax, 'currency' : _currency, 'time' : _time, 'status' : _status, 'email' : _email})
+                       'amountMax': _amountMax, 'currency' : _currency,  'status' : _status, 'email' : _email})
     req = requests.post("http://127.0.0.1:5001/api/filterTransactions", data = body, headers=headers)
     response = req.json()
     
