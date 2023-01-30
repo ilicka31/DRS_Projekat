@@ -80,7 +80,7 @@ def tryToExchange(email, ammount, currencyToExchange, usersCurrency):
     _hashID = generateHash(email, email, float(ammount), random_int)
     exchange = usersCurrency + "->" + currencyToExchange
     
-    cursor.execute("INSERT INTO transactions VALUES (%s, %s, %s, %s, %s, %s, %s);", [_hashID, email, email, _time, ammount, exchange, _status])
+    cursor.execute("INSERT INTO transactions VALUES (%s, %s, %s, %s, %s, %s, %s);", [_hashID, email, 'EXCHANGE', _time, ammount, exchange, _status])
 
     mysql.connection.commit()
     cursor.close()
@@ -151,9 +151,9 @@ def transactionProcess(queue : Queue):
         transaction = queue.get()
      
         # otvaranje nove konekcije u threadu
-        cnx = MySQLdb.connect(host="localhost",
+        cnx = MySQLdb.connect(host="database",
                             user="root",
-                            passwd="",
+                            passwd="123",
                             db="drs_baza")
 
         cursor = cnx.cursor()
@@ -245,7 +245,7 @@ def filterTransactions():
     transactionsNew = []
     
     
-    if((_sender == '') and (_receiver == '') and (_amountMin == '') and (_amountMax == '') and (_currency == '') and (_time == '') and (_status == '')):
+    if((_sender == '') and (_receiver == '') and (_amountMin == '') and (_amountMax == '') and (_currency == '') and (_status == '')):
         return jsonify(transactions)
     
     if(_amountMin != ''):
@@ -295,7 +295,7 @@ def addMoneyToDB(email, ammount):
     random_int = random.getrandbits(32)
     _hashID = generateHash(email, email, float(ammount), random_int)
     
-    cursor.execute("INSERT INTO transactions VALUES (%s, %s, %s, %s, %s, %s, %s);", [_hashID, email, email, _time, ammount, 'USD', 'SUCCESS'])
+    cursor.execute("INSERT INTO transactions VALUES (%s, %s, %s, %s, %s, %s, %s);", [_hashID, email, 'ADDING MONEY', _time, ammount, 'USD', 'SUCCESS'])
 
 
     mysql.connection.commit()
