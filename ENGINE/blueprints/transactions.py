@@ -1,8 +1,7 @@
 from flask import Blueprint, jsonify
-import flask, requests, random, struct, threading
+import flask, requests, sha3, random, struct, threading
 import json
-from cryptography.hazmat.backends import default_backend
-from cryptography.hazmat.primitives import hashes
+
 transactions_blueprint = Blueprint('transactions_blueprint', __name__)
 
 from main import mysql
@@ -319,8 +318,8 @@ def userExists(email: str) -> bool :
 def generateHash(_sender, _receiver, _amount, rand_int):
     input_data = _sender.encode() + _receiver.encode() + struct.pack("!d", _amount) + struct.pack("I", rand_int)
     
-    digest = hashes.Hash(hashes.SHA3_256(), backend=default_backend())
-    digest.update(input_data)
+    keccak256 = sha3.keccak_256()
+    keccak256.update(input_data)
     
-    keccak_hash = digest.finalize().hex()
+    keccak_hash = keccak256.hexdigest()
     return keccak_hash
