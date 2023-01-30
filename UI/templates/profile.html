@@ -115,6 +115,21 @@
                                 <input class="btn btn-secondary" type="submit" value="Create transaction"> 
                             </form>    
                         </div>
+
+                        <form action="http://127.0.0.1:5000/filter", method="post"> 
+                           
+                            Sender: <input type="text" name="sender">
+                            Receiver: <input type="text" name="receiver">
+                            Amount min: <input type="number" name="amountMin">
+                            Amount max: <input type="number" name="amountMax">
+                            Currency: <input type="text" name = "currency">
+                            Status: <input type="text" name = "status">
+                            Time (use exact format): <input type="text" name="time">
+
+                            <input class="btn btn-secondary" type="submit" value="Use filters for transactions"> 
+                                
+                        </form>   
+
                         {% endif %}
                         <div class="card-body d-flex ">
                             <div class="w-100 " style="overflow-y:scroll; height:70vh;">

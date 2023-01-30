@@ -1,5 +1,6 @@
 from flask import Blueprint, jsonify
 import flask, requests, sha3, random, struct, threading
+import json
 
 transactions_blueprint = Blueprint('transactions_blueprint', __name__)
 
@@ -227,6 +228,50 @@ def getTransactionHistory():
     content = flask.request.json
     _email = content['email']
     return getTransactionHistoryFromDB(_email)
+
+@transactions_blueprint.route('/filterTransactions', methods = ['POST'])
+def filterTransactions():
+    content = flask.request.json
+    _email = content['email']
+    transactions = getTransactionHistoryFromDB(_email)
+    
+    _sender = content['sender']
+    _receiver = content['receiver']
+    _amountMin = content['amountMin']
+    _amountMax = content['amountMax']
+    _currency = content['currency']
+    _time = content['time']
+    _status = content['status']
+    transactions = transactions.json
+    transactionsNew = []
+    
+    
+    if((_sender == '') and (_receiver == '') and (_amountMin == '') and (_amountMax == '') and (_currency == '') and (_time == '') and (_status == '')):
+        return jsonify(transactions)
+    
+    if(_amountMin != ''):
+        _amountMin = float(_amountMin)
+    else:
+        _amountMin = 0
+    
+    if(_amountMax != ''):
+        _amountMax = float(_amountMax)
+    else:
+        _amountMax = 0
+        
+        
+    for obj in transactions:
+        if(_amountMax == 0):
+            if((_sender.upper() in obj['sender'].upper()) and (_receiver.upper() in obj['receiver'].upper()) and (_amountMin < obj['amount']) and
+               (_time.upper() in obj['time'].upper()) and (_status.upper() in obj['status'].upper()) and (_currency.upper() in obj['currency'].upper())):
+                transactionsNew.append(obj)
+        else:
+            if((_sender.upper() in obj['sender'].upper()) and (_receiver.upper() in obj['receiver'].upper()) and (_amountMin < obj['amount']) and (_amountMax > obj['amount']) and
+               (_time.upper() in obj['time'].upper()) and (_status.upper() in obj['status'].upper()) and (_currency.upper() in obj['currency'].upper())):
+                transactionsNew.append(obj)
+                
+    
+    return jsonify(transactionsNew)
 
 def getTransactionHistoryFromDB(email):
     cursor = mysql.connection.cursor()

@@ -52,6 +52,26 @@ def logout():
 def createTr():
     return render_template("createTransaction.html", user=session['user'], transaction_history = getTransactionHistory(),currency_dictionary=currency_dictionary, users_currencies=getUsersCurrencies(session['user']['email']), message = request.args.get('message'))
 
+@app.route('/filter', methods = ['POST'])
+def filter():
+    _sender = request.form['sender']
+    _receiver = request.form['receiver']
+    _amountMin = request.form['amountMin']
+    _amountMax = request.form['amountMax']
+    _currency = request.form['currency']
+    _time = request.form['time']
+    _status = request.form['status']
+    user = session['user']
+    _email = session['user']['email']
+    
+    headers = {'Content-type' : 'application/json', 'Accept' : 'text/plain'}
+    body = json.dumps({'sender' : _sender, 'receiver' : _receiver, 'amountMin' : _amountMin, 
+                       'amountMax': _amountMax, 'currency' : _currency, 'time' : _time, 'status' : _status, 'email' : _email})
+    req = requests.post("http://127.0.0.1:5001/api/filterTransactions", data = body, headers=headers)
+    response = req.json()
+    
+    return render_template("profile.html", user=session['user'], transaction_history = response, currency_dictionary=currency_dictionary, users_currencies=getUsersCurrencies(session['user']['email']))
+
 @app.route('/createTransaction', methods = ['POST'])
 def createTransaction():
     _sender = session['user']['email']
